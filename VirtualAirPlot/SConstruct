@@ -1,0 +1,91 @@
+import os
+import os.path
+import glob
+import re
+import shutil
+import sys
+
+#######################################################
+# To modify
+################################################################
+env = Environment (tools=['default','qt',], TARGET_ARCH='x86_64')
+env.Replace (QT_AUTOSCAN=0)
+env.Replace (QT_LIB='/usr/lib/x86_64-linux-gnu')
+env.Replace (QT_MOCHSUFFIX='.cpp')
+env.Replace (QT_UICIMPLSUFFIX='.cpp')
+env["QTDIR"] = "/usr/lib/x86_64-linux-gnu/qt5"
+env['InstallPath'] = '/home/zolly/Desktop/2UVProject/Unix'
+env['ICE'] = "/usr/bin"
+env.Append (CPPPATH='/usr/include/x86_64-linux-gnu/qt5')
+env.Append (CPPPATH='/usr/include/python3.13/')
+env.Append (CPPPATH='/usr/include/postgresql')
+env.Append (LIBPATH='/usr/lib/x86_64-linux-gnu')
+#####################################################################
+env.Append (CPPPATH= env['InstallPath'] + '/VirtualAirPlot')
+
+env['BINDIR'] = env['InstallPath'] + "/VirtualAirPlot/BINDIR"
+
+
+
+def Qt4UiTargets (target, source, env):
+  base, extension = os.path.splitext ((str(source[0])))
+  targetlist = []
+  targetlist.append( base + '.h')
+  return (targetlist, source)
+
+def Qt4UiBuilderFunction (target, source, env):
+  uiheader = str(target[0])
+  uifile = str(source[0])
+  command = env["QTDIR"]+"/bin/uic -o %s %s" % (uiheader, uifile)
+  print (command)
+  os.system (command)
+
+Qt4UiBuilder = Builder (action=Qt4UiBuilderFunction, emitter=Qt4UiTargets)
+env.Append (BUILDERS={'QT4UI' : Qt4UiBuilder})
+
+
+
+def IceTargets (target, source, env):
+  base, extension = os.path.splitext ((str(source[0])))
+  base = os.path.basename(base)
+  targetlist = []
+  targetlist.append (base+".cpp")
+  targetlist.append (base+".h")
+  print ("source : %s" % str (source[0]))
+  print ("targetlist : %s" % targetlist)
+  return (targetlist, source)
+
+def IceBuilderFunction (target, source, env):
+  print ("Target : %s" % target[0])
+  print ("Source : %s" % source[0])
+  sourcefile = str(source[0])
+  command =  "%s"  % (sourcefile)
+  print ("\"" + env["ICE"] + "/slice2cpp" + "\" " + command)
+  os.system ("\"" + env["ICE"] + "/slice2cpp" + "\" " + command)
+
+# make a builder method
+
+IceBuilder = Builder (action=IceBuilderFunction, emitter=IceTargets)
+env.Append (BUILDERS={'ICE' : IceBuilder})
+
+# build the skeletons for ICE
+
+ICEFiles = glob.glob ('*.ice')
+for ICEFile in ICEFiles:
+	ICEFile = os.path.basename (ICEFile)
+	targetfile = env.ICE (source='%s' % (ICEFile))
+
+for x in os.listdir('.'):
+    if re.match('.*\.ice', x):
+        targetfile = env.ICE (source='%s' % (ICEFile))
+    	
+#env.Append(LINKFLAGS = ['/noexp'])
+
+if env['PLATFORM'] == 'win32':
+    env.Append (CCFLAGS='-W3 -MD -O1 -EHsc -GR -DQT_THREAD_SUPPORT -DNO_DEBUG -DGetMessageA=GetMessage -DResetPrinterA=ResetPrinter -DM_PI=3.14159265358979323846')
+else:
+    env.Append (CCFLAGS='-Wall -fPIC -DQT_THREAD_SUPPORT -D_REENTRANT')
+
+Export ('env')
+SConscript(env['InstallPath'] + '/VirtualAirPlot/SConscript')
+shutil.copyfile('VirtualAirPlot.xml', env["BINDIR"] + '/VirtualAirPlot.xml')

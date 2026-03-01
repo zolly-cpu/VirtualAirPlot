@@ -1,0 +1,471 @@
+<DatabaseEditor>
+  <ROUTINES>
+  	<!--
+	PUT RTI_ in front of the name for a routine
+	-->
+	<ROUTINE name="RTI_ADD_CUSTOMER" alias="Adding a customer" source="PYTHON" sourcename="ADD_CUSTOMER.PY" methodname="integer">
+		<OBJECT name="EMPLOYEE"/>
+		<OBJECT name="PERSON"/>
+	</ROUTINE>
+	<!--
+    <ROUTINE name="LINK_EMPL" alias="Link an employee" source="DLL" sourcename="LINK_EMPLOYEE.DLL" returnType="string">
+		<OBJECT name="EMPLOYEE"/>
+		<OBJECT name="PERSON"/>
+		<OBJECT name="CUSTOMER"/>		
+	</ROUTINE>
+	-->
+    <ROUTINE name="RTI_ADD_PHONE" alias="Adding a customer" source="PYTHON" sourcename="ADD_CUSTOMER.PY" methodname="integer">
+		<OBJECT name="EMPLOYEE"/>
+		<OBJECT name="PERSON"/>
+	</ROUTINE>
+	<!--
+    <ROUTINE name="SEARCH_PERSON" alias="SEARCH_PERSON" source="DLL" 	sourcename="LINK_EMPLOYEE.DLL" returnType="string">
+		<OBJECT name="CUSTOMER"/>
+		<OBJECT name="PERSON"/>
+	</ROUTINE>
+	-->
+	    <ROUTINE name="RTI_ADD_CHEF" alias="Adding a chef" source="PYTHON" sourcename="ADD_CUSTOMER.PY" methodname="integer">
+		<OBJECT name="EMPLOYEE"/>
+		<OBJECT name="PERSON"/>
+	</ROUTINE>
+	
+	
+	
+  </ROUTINES>
+  <TABLES>
+    <!-- Max table name lenght is 32 char (if postgress not recompiled to more) -->
+    <!--
+    CREATE TABLE equipment(
+    equip_id uuid PRIMARY KEY
+    DEFAULT uuid_generate_v1() ,
+    equip_name varchar(255));
+    -->
+    <!--
+	Supported types
+	
+    -->	
+    <TABLE name="CUSTOMER">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="varchar(255)" extra="" reference="no"></COLUMN>
+      <COLUMN name="LASTNAME" alias="Familienaam" type="varchar(255)" extra="" reference="no"></COLUMN>
+      <COLUMN name="FIRSTNAME" alias="Voornaam" type="varchar(255)" extra="" reference="no"></COLUMN>
+      <COLUMN name="STRAAT" alias="Straat" type="varchar(255)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CUSTOMER_QR" alias="QR Code" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_ROOM_NUMBER" alias="Kamer nr." type="varchar(255)" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_ON_ROOM" alias="Opdienen op kamer" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="CUSTOMER_DIET" alias="Dieet" type="uuid[]" extra="" reference="DIET"></COLUMN>
+	  <COLUMN name="CUSTOMER_ALLERGY" alias="Allergie" type="uuid[]" extra="" reference="ALLERGY"></COLUMN>
+	  <COLUMN name="CUSTOMER_INSULINE_MORNING" alias="Insuline in de morgen" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_INSULINE_NOON" alias="Insuline over de middag" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_INSULINE_EVENING" alias="Insuline op de avond" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_HELP_FEEDING" alias="Helpen eten" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_SWALLOW_PROB" alias="Slik problemen" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_DOES_NOT_LIKE" alias="Houd niet van" type="uuid[]" extra="" reference="DOES_NOT_LIKE"></COLUMN>
+	  <COLUMN name="CUSTOMER_TEXTURE" alias="Textuur" type="uuid" extra="" reference="FOOD_TEXTURE"></COLUMN>
+	  <COLUMN name="CUSTOMER_PORTION" alias="Portie" type="uuid" extra="" reference="FOOD_PORTION"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CUSTOMER_LOCATION_GROUP" alias="Customer location" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="STANDARD_BREAD_BR" alias="Standard brood ontbijt" type="uuid" extra="" reference="FOOD_BREAD"></COLUMN>
+	  <COLUMN name="STANDARD_BREAD_DI" alias="Standard brood avondmaal" type="uuid" extra="" reference="FOOD_BREAD"></COLUMN>
+	  <COLUMN name="STANDARD_BREAD_W1_2" alias="Standard bread W 1-2" type="uuid" extra="" reference="FOOD_BREAD"></COLUMN>
+	  <COLUMN name="STANDARD_BREAD_W3_4" alias="Standard bread W 3-4" type="uuid" extra="" reference="FOOD_BREAD"></COLUMN>
+	  <COLUMN name="CUSTOMER_STANDARD_AMOUT_BREAD_BR" alias="Stand. hoev. brood" type="int" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_STANDARD_AMOUT_BREAD_DI" alias="Stand. hoev. brood" type="int" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="STANDARD_SMEAR" alias="Smeren" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="STANDARD_CRUSTS" alias="Korst" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="STANDARD_BUTTER" alias="Boter" type="uuid" extra="" reference="FOOD_BUTTER"></COLUMN>	  
+	  <COLUMN name="STANDARD_CHARCUTERIE_BR" alias="Standaard Charcuterie onbijt" type="uuid[]" extra="" reference="FOOD_CHARCUTERIE"></COLUMN>	  	  
+	  <COLUMN name="STANDARD_CHARCUTERIE_DI" alias="Standaard Charcuterie avondmaal" type="uuid[]" extra="" reference="FOOD_CHARCUTERIE"></COLUMN>	  	  
+	  <COLUMN name="CUSTOMER_STANDARD_AMOUT_CHARCUTERIE_BR" alias="Stand. hoev. charcuterie" type="int" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CUSTOMER_STANDARD_AMOUT_CHARCUTERIE_DI" alias="Stand. hoev. charcuterie" type="int" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="STANDARD_DRINKS_BR" alias="Drinks ontbijt" type="uuid[]" extra="" reference="FOOD_DRINK"></COLUMN>	  	  	  
+	  <COLUMN name="STANDARD_DRINKS_DI" alias="Drinks avondmaal" type="uuid[]" extra="" reference="FOOD_DRINK"></COLUMN>	  	  	  
+	  <COLUMN name="STANDARD_DRINKSERVICE_BR" alias="Drink service ontbijt" type="uuid[]" extra="" reference="FOOD_DRINKSERIVCE"></COLUMN>	  	  	  
+	  <COLUMN name="STANDARD_DRINKSERVICE_DI" alias="Drink service avondmaal" type="uuid[]" extra="" reference="FOOD_DRINKSERIVCE"></COLUMN>	  	  	  
+	  <COLUMN name="STANDARD_SUGAR" alias="Suiker" type="uuid" extra="" reference="FOOD_SUGAR"></COLUMN>	  
+	  <COLUMN name="STANDARD_DESSERT_BR" alias="Dessert ontbijt" type="uuid" extra="" reference="FOOD_DESSERT"></COLUMN>	  
+	  <COLUMN name="STANDARD_DESSERT_DI" alias="Dessert avondmaal" type="uuid" extra="" reference="FOOD_DESSERT"></COLUMN>	  
+	  <COLUMN name="STANDARD_NAPKIN" alias="Bavet" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="STANDARD_PAPER" alias="Krant" type="uuid" extra="" reference="PAPER"></COLUMN>	  
+    </TABLE>
+    <TABLE name="CUSTOMER_REMARK">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="varchar(255)" extra="" reference="no"></COLUMN>
+	  <COLUMN name="COMMENT" alias="Opmerking" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="REMARK_CUSTOMER" alias="Opmerking voor klant" type="uuid" extra="" reference="CUSTOMER"></COLUMN>
+	  <COLUMN name="REMARK_DATE" alias="Tijdstip opmerking" type="timestamp(3)" extra="" reference="no"></COLUMN>	  	  	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+    </TABLE>	
+    <TABLE name="DIET">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>		
+    <TABLE name="ALLERGY">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>			
+    <TABLE name="DOES_NOT_LIKE">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>				
+    <TABLE name="FOOD_TEXTURE">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>				
+    <TABLE name="FOOD_PORTION">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>					
+    <TABLE name="PAPER">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>	
+    <TABLE name="FOOD_PLACE">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>	
+	    <TABLE name="FOOD_BREAD">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>	
+    <TABLE name="FOOD_BUTTER">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>	
+	<TABLE name="FOOD_DRINK">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>	
+	<TABLE name="FOOD_DRINKSERIVCE">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>	
+	<TABLE name="FOOD_CHARCUTERIE">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CHARCUTERIE_AVAILABLE_BR" alias="Aanwezig" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="CHARCUTERIE_AVAILABLE_DI" alias="Aanwezig" type="int" extra="enum" reference="no"></COLUMN>
+    </TABLE>		
+	<TABLE name="FOOD_SUGAR">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>			
+	<TABLE name="FOOD_DESSERT">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>				
+	<TABLE name="FOOD_BREAKFAST">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="BREAKFAST_CUSTOMER" alias="Klant" type="uuid" extra="" reference="CUSTOMER"></COLUMN>
+	  <COLUMN name="BREAKFAST_PERPARED" alias="Voorbereid" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="BREAKFAST_LOCATION_GROUP" alias="Ontbijt klant locatie" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="BREAKFAST_BREAD" alias="Soort brood" type="uuid" extra="" reference="FOOD_BREAD"></COLUMN>
+	  <COLUMN name="BREAKFAST_AMOUNT_BREAD" alias="Hoev. brood" type="int" extra="" reference="no"></COLUMN>
+	  <COLUMN name="BREAKFAST_SMEAR" alias="Smeren" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="BREAKFAST_BUTTER" alias="Boter" type="uuid" extra="" reference="FOOD_BUTTER"></COLUMN>	  
+	  <COLUMN name="BREAKFAST_CRUSTS" alias="Korst" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="BREAKFAST_DRINKS" alias="Drank" type="uuid[]" extra="" reference="FOOD_DRINK"></COLUMN>	  	  	  
+	  <COLUMN name="BREAKFAST_DRINKSSERVICE" alias="Drank service" type="uuid[]" extra="" reference="FOOD_DRINKSERIVCE"></COLUMN>	  	  	  
+	  <COLUMN name="BREAKFAST_CHARCUTERIE" alias="Charcuterie" type="uuid[]" extra="" reference="FOOD_CHARCUTERIE"></COLUMN>	  	  
+	  <COLUMN name="BREAKFAST_AMOUNT_CHARCUTERIE" alias="Hoev. charcuterie" type="int" extra="" reference="no"></COLUMN>	  	  
+	  <COLUMN name="BREAKFAST_SUGAR" alias="Suiker" type="uuid" extra="" reference="FOOD_SUGAR"></COLUMN>	  
+	  <COLUMN name="BREAKFAST_DESSERT" alias="Dessert" type="uuid" extra="" reference="FOOD_DESSERT"></COLUMN>	  
+	  <COLUMN name="BREAKFAST_NAPKIN" alias="Bavet" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="BREAKFAST_PAPER" alias="Krant" type="uuid" extra="" reference="PAPER"></COLUMN>	  
+	  <COLUMN name="BREAKFAST_DATE" alias="Datum ontbijt" type="timestamp(3)" extra="" reference="no"></COLUMN>	  	  
+    </TABLE>				
+	<TABLE name="FOOD_DINNER">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Aanmaak datum" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="DINNER_CUSTOMER" alias="Klant" type="uuid" extra="" reference="CUSTOMER"></COLUMN>
+	  <COLUMN name="DINNER_PERPARED" alias="Voorbereid" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="DINNER_LOCATION_GROUP" alias="Avondmaal klant locatie" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="DINNER_BREAD" alias="Soort brood" type="uuid" extra="" reference="FOOD_BREAD"></COLUMN>
+	  <COLUMN name="DINNER_AMOUNT_BREAD" alias="Hoev. brood" type="int" extra="" reference="no"></COLUMN>
+	  <COLUMN name="DINNER_SMEAR" alias="Smeren" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="DINNER_BUTTER" alias="Boter" type="uuid" extra="" reference="FOOD_BUTTER"></COLUMN>	  
+	  <COLUMN name="DINNER_CRUSTS" alias="Korst" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Commentaar" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="DINNER_DRINKS" alias="Drinken" type="uuid[]" extra="" reference="FOOD_DRINK"></COLUMN>	  	  
+	  <COLUMN name="DINNER_DRINKSSERVICE" alias="Drank service" type="uuid[]" extra="" reference="FOOD_DRINKSERIVCE"></COLUMN>	  	  	  	  
+	  <COLUMN name="DINNER_CHARCUTERIE" alias="Charcuterie" type="uuid[]" extra="" reference="FOOD_CHARCUTERIE"></COLUMN>	  	  
+	  <COLUMN name="DINNER_AMOUNT_CHARCUTERIE" alias="Hoev. charcuterie" type="int" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="DINNER_SUGAR" alias="Suiker" type="uuid" extra="" reference="FOOD_SUGAR"></COLUMN>	  
+	  <COLUMN name="DINNER_DESSERT" alias="Dessert" type="uuid" extra="" reference="FOOD_DESSERT"></COLUMN>	  
+	  <COLUMN name="DINNER_NAPKIN" alias="Bavet" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="DINNER_DATE" alias="Datum avondmaal" type="timestamp(3)" extra="" reference="no"></COLUMN>	  	  
+    </TABLE>				
+	<TABLE name="FOOD_LUNCH">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Name" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="COMMENT" alias="Comment" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="LUNCH_CUSTOMER" alias="Customer" type="uuid" extra="" reference="CUSTOMER"></COLUMN>
+	  <COLUMN name="LUNCH_PERPARED" alias="Prepared" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="LUNCH_LOCATION" alias="Location" type="uuid" extra="" reference="FOOD_PLACE"></COLUMN>
+	  <COLUMN name="LUNCH_TEXTURE" alias="Texture" type="uuid" extra="" reference="FOOD_TEXTURE"></COLUMN>
+	  <COLUMN name="LUNCH_PORTION" alias="Portion" type="uuid" extra="" reference="FOOD_PORTION"></COLUMN>
+	  <COLUMN name="LUNCH_PLATE" alias="Plate" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="LUNCH_DRINKS" alias="Drinks" type="uuid[]" extra="" reference="FOOD_DRINK"></COLUMN>	  	  
+	  <COLUMN name="LUNCH_APIRITIF" alias="Apiritif" type="uuid" extra="" reference="FOOD_DRINK"></COLUMN>	  	  
+	  <COLUMN name="LUNCH_NAPKIN" alias="Napkin" type="int" extra="enum" reference="no"></COLUMN>	  
+	  <COLUMN name="LUNCH_DATE" alias="Date dinner" type="timestamp(3)" extra="" reference="no"></COLUMN>	  	  
+    </TABLE>					
+	<!-- Fix table -->
+    <TABLE name="CYCLES">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+      	<COLUMN name="ROUTINES" alias="Routines" type="uuid[]" extra="" reference="CYCLE_ROUTINE"></COLUMN>
+      	<COLUMN name="AMOUNT_OF_PROCESSORS" alias="Amount of processors" type="int" extra="" reference="no"></COLUMN>
+      	<COLUMN name="STARTNUMBER_OF_PROCESSORS" alias="Start number of processor" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="WORKSTATION_NAME" alias="Workstation name" type="varchar(255)" extra="" reference="no"></COLUMN>
+		<COLUMN name="CURRENT_ROUTINE" alias="Current routine" type="uuid" extra="" reference="CYCLE_ROUTINE"></COLUMN>
+    </TABLE>
+	<!-- Fix table -->
+    <TABLE name="CYCLE_ROUTINE">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+      	<COLUMN name="ROUTINE" alias="Routines" type="uuid" extra="" reference="RTI_ADD_CHEF$;$RTI_ADD_CUSTOMER$;$RTI_ADD_PHONE"></COLUMN>
+		<COLUMN name="ROUTINE_CLASS" alias="Routine class" type="varchar(255)" extra="" reference="no"></COLUMN>
+      	<COLUMN name="CYCLE" alias="Connected cycle" type="uuid" extra="" reference="CYCLES"></COLUMN>	
+		<COLUMN name="PARENT" alias="Parent" type="uuid[]" extra="" reference="CYCLES$;$CYCLE_ROUTINE"></COLUMN>
+		<COLUMN name="PARENT_CLASS" alias="Parent class" type="varchar(255)" extra="" reference="no"></COLUMN>
+		<COLUMN name="CHILDREN" alias="Children" type="uuid[]" extra="" reference="CYCLE_ROUTINE"></COLUMN>
+		<COLUMN name="CHILD_CLASS" alias="Child class" type="varchar(255)" extra="" reference="no"></COLUMN>
+	</TABLE>
+	<!-- Fix table but can extend -->
+    <TABLE name="BATCH">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+	  <COLUMN name="NAME" alias="Name" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="PRODUCTS" alias="List of products" type="uuid[]" extra="" reference="PRODUCT"></COLUMN>	  
+	  <COLUMN name="PRODUCT_NUMBER" alias="Number of products" type="int" extra="" reference="no"></COLUMN>
+	  <COLUMN name="PRODUCT_PRIORITY" alias="Priority" type="int" extra="" reference="no"></COLUMN>
+	  <COLUMN name="WORKSTEPS" alias="Workteps" type="uuid[]" extra="" reference="WORKSTEP"></COLUMN>
+    </TABLE>	
+    <TABLE name="PRODUCT">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+	  <COLUMN name="NAME" alias="Name" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="PREVIOUS_WORKSTEP" alias="Previous workstep" type="uuid" extra="" reference="WORKSTEP"></COLUMN>
+	  <COLUMN name="CURRENT_WORKSTEP" alias="Current workstep" type="uuid" extra="" reference="WORKSTEP"></COLUMN>
+	  <COLUMN name="NEXT_WORKSTEP" alias="Next workstep" type="uuid" extra="" reference="WORKSTEP"></COLUMN>
+	  <COLUMN name="PRODUCT_STATE" alias="State of product" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="PRODUCT_WS_STATE" alias="State of product workstep" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="PRODUCT_INDEX" alias="Product index" type="int" extra="" reference="no"></COLUMN>
+    </TABLE>		
+    <TABLE name="MACH_GROUP">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+	  <COLUMN name="NAME" alias="Name" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="MACH_GROUP_MACHS" alias="List of machines" type="uuid[]" extra="" reference="LIVING_OBJ_MACH"></COLUMN>	  
+	  <COLUMN name="MACH_GROUP_PLANNING" alias="Planning of the shifts for te machine" type="uuid" extra="" reference="PLANNING"></COLUMN>	  
+    </TABLE>
+    <TABLE name="PLANNING">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+	  <COLUMN name="NAME" alias="Name" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="OVERLAP_TIME" alias="List of machines (min)" type="int" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="PRE_PREP" alias="Pre preparation (min)" type="int" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="POST_PREP" alias="Post preparation (min)" type="int" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="PLANNING_SHIFT" alias="Attached shift" type="uuid" extra="" reference="SHIFT"></COLUMN>	  
+    </TABLE>
+    <TABLE name="SHIFT">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+	  <COLUMN name="NAME" alias="Name" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_START_MONDAY" alias="Start of shift on monday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_START_TUESDAY" alias="Start of shift on tuesday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_START_WEDNESDAY" alias="Start of shift on wednesday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_START_THURSDAY" alias="Start of shift on thursday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_START_FRIDAY" alias="Start of shift on friday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_START_SATURDAY" alias="Start of shift on saturday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_START_SUNDAY" alias="Start of shift on sunday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_STOP_MONDAY" alias="Stop of shift on monday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_STOP_TUESDAY" alias="Stop of shift on tuesday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_STOP_WEDNESDAY" alias="Stop of shift on wednesday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_STOP_THURSDAY" alias="Stop of shift on thursday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_STOP_FRIDAY" alias="Stop of shift on friday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_STOP_SATURDAY" alias="Stop of shift on saturday" type="timestamp" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="SHIFT_STOP_SUNDAY" alias="Stop of shift on sunday" type="timestamp" extra="" reference="no"></COLUMN>	  	  
+    </TABLE>		
+    <TABLE name="OPERATION">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+		<COLUMN name="OBJECT" alias="Performed on object" type="uuid" extra="" reference="LIVING_OBJ_MACH$;$EMPLOYEE"></COLUMN>
+      	<COLUMN name="OBJECTS" alias="Included objects" type="uuid[]" extra="" 	reference="PERSON$;$CUSTOMER$;$EMPLOYEE$;$LIVING_OBJ_MACH"></COLUMN>
+      	<COLUMN name="DATUM_START" alias="Start date" type="timestamp(3)" extra="" reference="no"></COLUMN>
+      	<COLUMN name="DATUM_STOP" alias="Stop date" type="timestamp(3)" extra="" reference="no"></COLUMN>
+		<COLUMN name="H2O_VALUE" alias="H2O value" type="float8" extra="" reference="no"></COLUMN>
+		<COLUMN name="PERFORMED_WORKSTEP" alias="Performed workstep" type="uuid" extra="" reference="WORKSTEP"></COLUMN>
+		<COLUMN name="OPERATION_STATE" alias="State of the operation" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="OPERATION_SOURCE" alias="State of the operation" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="OPERATION_CLOSED_CAUSE" alias="Why operation closed" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="OPERATION_ERROR_INFORMATION" alias="Error Information" type="text" extra="" reference="no"></COLUMN>
+    </TABLE>
+    <TABLE name="EMPLOYEE">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+	  <COLUMN name="NAME" alias="Naam" type="text" extra="" reference="no"></COLUMN>
+      <COLUMN name="SURE_NAME" alias="Voornaam" type="varchar(255)" extra="" reference="no"></COLUMN>
+	  <COLUMN name="FAMELY_NAME" alias="Familienaam" type="varchar(255)" extra="" reference="no"></COLUMN>
+	  <COLUMN name="EMAIL" alias="Email" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="PASSWORD" alias="Password" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="EMPLOYEE_GROUPS" alias="Employer groups" type="uuid[]" extra="" reference="EMPL_GROUP"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+    </TABLE>
+    <TABLE name="EMPL_GROUP">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Name" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="DESCRIPTION" alias="Description" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="LEVEL" alias="Level" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+    </TABLE>
+    <TABLE name="LINKEDDOC">
+      <COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      <COLUMN name="NAME" alias="Name" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="FILE_NAME" alias="File name" type="text" extra="" reference="no"></COLUMN>
+	  <COLUMN name="FILE_PATH" alias="File path" type="text" extra="" reference="no"></COLUMN>	  
+	  <COLUMN name="FILE_TYPE" alias="File path" type="int" extra="enum" reference="no"></COLUMN>
+	  <COLUMN name="FILE_NAMES_EXTRA" alias="File name" type="text[]" extra="" reference="no"></COLUMN>
+	  <COLUMN name="COMMENT" alias="Comment" type="text" extra="" reference="no"></COLUMN>	  
+    </TABLE>
+	<TABLE name="WORKSTEP">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>
+		<COLUMN name="WS_TECH" alias="Workstep technology" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="WS_ASSIGNED" alias="Workstep assigned to" type="uuid" extra="" reference="EMPL_GROUP$;$EMPLOYEE"></COLUMN>
+		<COLUMN name="WS_WORKPLACE" alias="Workstep perforemed on workplace" type="uuid" extra="" reference="LIVING_OBJ_MACH"></COLUMN>
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+		<COLUMN name="WS_STATE" alias="State of the workstep" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="WS_PERFORMED_BY" alias="Workstep done by" type="uuid" extra="" reference="EMPLOYEE"></COLUMN>
+		<COLUMN name="WS_PLANNED_START" alias="Planned start" type="timestamp" extra="" reference="no"></COLUMN>
+		<COLUMN name="WS_PLANNED_STOP" alias="Planned stop" type="timestamp" extra="" reference="no"></COLUMN>
+		<COLUMN name="LINKED_DOCUMENTS" alias="Linked documents" type="uuid[]" extra="" reference="LINKEDDOC"></COLUMN>
+		<COLUMN name="WS_MACH_GROUP" alias="Linked to machine group" type="uuid" extra="" reference="MACH_GROUP"></COLUMN>
+		<COLUMN name="WS_INCLUDE_PLANNING" alias="Include in planning" type="int" extra="enum" reference="MACH_GROUP"></COLUMN>
+    </TABLE>	
+	<!-- Fix table -->
+    <TABLE name="LIVING_OBJ_MACH">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+      	<COLUMN name="DATUM_START" alias="Start date" type="timestamp" extra="" reference="no"></COLUMN>
+      	<COLUMN name="DATUM_STOP" alias="Stop date" type="timestamp" extra="" reference="no"></COLUMN>
+		<COLUMN name="TIMER_CYCLE" alias="Cycle timer" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="SOCKET_PORT" alias="Port of the socket" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="SOCKET_IP" alias="IP of the socket" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="WORKSTATION_NAME" alias="Workstation name" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="COMMANDS_TODO" alias="Commands to perform" type="text[]" extra="" reference="no"></COLUMN>
+		<COLUMN name="COMMANDS_DONE" alias="Command history" type="text[]" extra="" reference="no"></COLUMN>
+		<COLUMN name="COMMAND_REPLAY_HISTORY" alias="Command replay history" type="text[]" extra="" reference="no"></COLUMN>
+		<COLUMN name="CONNECTION_STATE" alias="Connection state" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="DEVICE_STATE" alias="State of device" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="DEVICE_FILETRANSFER" alias="State transfer of file" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="ERROR_TABLE" alias="Error table" type="uuid" extra="" reference="ERRORS_LIVING_OBJ_MACH"></COLUMN>
+		<COLUMN name="CURRENT_ERROR" alias="Current error" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="WS_TECH" alias="Workplace technology" type="int" extra="enum" reference="no"></COLUMN>
+    </TABLE>
+	<TABLE name="ERRORS_LIVING_OBJ_MACH">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>   
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+      	<COLUMN name="STANDARD_ERRORS" alias="Standard error text" type="text[]" extra="" reference="no"></COLUMN>
+		<COLUMN name="CUSTOM_ERRORS" alias="Custom error text" type="text[]" extra="" reference="no"></COLUMN>
+	</TABLE>	
+	<!-- Fix table -->
+    <TABLE name="LIVING_OBJ_LOCATION">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+      	<COLUMN name="DATUM_START" alias="Start date" type="timestamp" extra="" reference="no"></COLUMN>
+      	<COLUMN name="DATUM_STOP" alias="Stop date" type="timestamp" extra="" reference="no"></COLUMN>
+		<COLUMN name="TIMER_CYCLE" alias="Cycle timer" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="SOCKET_PORT" alias="Port of the socket" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="SOCKET_IP" alias="IP of the socket" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="WORKSTATION_NAME" alias="Workstation name" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="COMMANDS_TODO" alias="Commands to perform" type="text[]" extra="" reference="no"></COLUMN>
+		<COLUMN name="COMMANDS_DONE" alias="Command history" type="text[]" extra="" reference="no"></COLUMN>
+		<COLUMN name="COMMAND_REPLAY_HISTORY" alias="Command replay history" type="text[]" extra="" reference="no"></COLUMN>
+		<COLUMN name="CONNECTION_STATE" alias="Connection state" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="DEVICE_FILETRANSFER" alias="State transfer of file" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="DEVICE_STATE" alias="State of device" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="CURRENT_ERROR" alias="Current error" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="FLOOR_PLAN_IMAGE" alias="Floor plan image" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="SIZE_X" alias="X_SIZE" type="float8" extra="" reference="no"></COLUMN>
+		<COLUMN name="SIZE_Y" alias="Y_SIZE" type="float8" extra="" reference="no"></COLUMN>		
+		<COLUMN name="ERROR_TABLE" alias="Error table" type="uuid" extra="" reference="ERRORS_LIVING_OBJ_LOCATION"></COLUMN>
+    </TABLE>	
+	<TABLE name="ERRORS_LIVING_OBJ_LOCATION">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>   
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+      	<COLUMN name="STANDARD_ERRORS" alias="Standard error text" type="text[]" extra="" reference="no"></COLUMN>
+		<COLUMN name="CUSTOM_ERRORS" alias="Custom error text" type="text[]" extra="" reference="no"></COLUMN>
+	</TABLE>
+	<TABLE name="OBJECT_TO_LOCATE">
+      	<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>	
+      	<COLUMN name="NAME" alias="Name" type="varchar(255)" extra="" reference="no"></COLUMN>   
+		<COLUMN name="CREATED_ON" alias="Creation date" type="timestamp(3)" extra="" reference="no"></COLUMN>	  
+      	<COLUMN name="OBJECT_TO_LOCATE_KIND" alias="Kind" type="int" extra="enum" reference="no"></COLUMN>
+		<COLUMN name="OBJ_LOCATION_ID" alias="Link to wich location" type="uuid" extra="" reference="LIVING_OBJ_LOCATION"></COLUMN>
+		<COLUMN name="QR_BAR_CODE" alias="Code to scan" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="SSID" alias="SSID" type="text" extra="" reference="no"></COLUMN>
+		<COLUMN name="INCLUDED_OBJECT" alias="Included object" type="uuid" extra="" reference="EMPLOYEE"></COLUMN>
+		<COLUMN name="COORD_X" alias="COORD_X" type="float8" extra="" reference="no"></COLUMN>
+		<COLUMN name="COORD_Y" alias="COORD_Y" type="float8" extra="" reference="no"></COLUMN>
+		<COLUMN name="COORD_Z" alias="COORD_Z" type="float8" extra="" reference="no"></COLUMN>
+	</TABLE>	
+	<TABLE name="VIRTUAL_AIR_PLOT_COORD">
+		<COLUMN name="PKEY" alias="Primary key" type="uuid" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_01_X_COORD" alias="BEACON_01_X_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_01_Y_COORD" alias="BEACON_01_Y_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_01_Z_COORD" alias="BEACON_01_Z_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_02_X_COORD" alias="BEACON_02_X_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_02_Y_COORD" alias="BEACON_02_Y_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_02_Z_COORD" alias="BEACON_02_Z_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_03_X_COORD" alias="BEACON_03_X_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_03_Y_COORD" alias="BEACON_03_Y_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_03_Z_COORD" alias="BEACON_03_Z_COORD" type="int" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_01_LENGHT" alias="BEACON_01_LENGHT" type="float8" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_02_LENGHT" alias="BEACON_02_LENGHT" type="float8" extra="" reference="no"></COLUMN>
+		<COLUMN name="BEACON_03_LENGHT" alias="BEACON_03_LENGHT" type="float8" extra="" reference="no"></COLUMN>
+	</TABLE>
+
+  </TABLES>
+</DatabaseEditor>

@@ -1,0 +1,16 @@
+<DATABASE>
+	<USERNAME value="wolly"/>
+	<PASSWORD value="wolly"/>
+	<DATABASENAME value="TEST_PROJECT"/>
+	<HOSTADRESS value="127.0.0.1"/>
+	<PORT value="5432"/>
+	<!-- DATABASETECH (kind of database) -->
+	<!-- 1 = POSTGRES -->
+	<!-- 2 = MYSQL -->
+	<!-- 3 = ORACLE -->
+	<!-- ... -->	
+	<DATABASETECH value="1"/>
+
+	<!-- Database configuration path -->
+	<DATABASE_CONFIG_PATH value="/home/zolly/Desktop/2UVProject/Unix/Server/DatabaseStructure.xml"/>
+</DATABASE>

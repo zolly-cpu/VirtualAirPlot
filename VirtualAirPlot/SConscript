@@ -1,0 +1,47 @@
+Import ('env')
+
+myenv = env
+
+InstallDir = myenv['BINDIR']
+
+
+################################ ServerTest ###################################
+
+SourcesQtTest = [ 'clMain.cpp',
+                  myenv.Moc('clMainWindow.h'),
+                  myenv.Moc('clCubeInitialise.h'),
+                  myenv.Moc('clUpdateDatabaseCoord.h'),
+                  myenv.Moc('clSocketToBeacons.h'),
+                  myenv.Moc('clSocketToBeaconThread.h'),
+                  myenv.Moc('clCubeReadValues.h'),
+                  myenv.QT4UI('wdCubeInitialise.ui')[1:],
+                  myenv.QT4UI('wdCubeReadValues.ui')[1:],
+                  'clMainWindow.cpp',
+                  'clCubeInitialise.cpp',
+                  'clCubeReadValues.cpp',
+                  'clSocketToBeaconThread.cpp',
+                  'clUpdateDatabaseCoord.cpp',
+                  'clSocketToBeacons.cpp',
+                  'clIceClientLogging.cpp',
+                  'clIceClientServer.cpp',
+                  'ICE_LogApplication.cpp',
+                  'ICE_ServerApplication.cpp',
+                  'clDatabaseColumn.cpp',
+                  'clDatabaseAction.cpp'
+                 ]
+                 
+DatabaseProg = myenv.Program('VirtualAirPlotInitialisation', SourcesQtTest,
+                  LIBS=['libQt5Widgets',
+                    'libQt5Core',
+                    'libQt5Gui',
+                    'libQt5Xml',
+                    'libQt5Charts',
+                    'libQt5Network',
+					'libpq',
+                    'libIce',
+                    'libIceDiscovery',
+                    'libIceLocatorDiscovery',
+                    'libIceSSL',
+                    'libpython3.13'
+                        ])
+myenv.Install (InstallDir, DatabaseProg)
