@@ -31,6 +31,8 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostInfo>
+#include <QtGui/QScreen>
+#include <QtCore/QSize>
 
 #include <QtCore/QFile>
 #include <QtXml/QDomDocument>
@@ -38,7 +40,36 @@
 #include <QtXml/QDomElement>
 #include <QtCore/QByteArray>
 
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+#include <Qt3DCore/QAspectEngine>
 
+#include <Qt3DInput/QInputAspect>
+
+#include <Qt3DRender/QTextureImage>
+#include <Qt3DRender/QTexture>
+#include <Qt3DRender/QRenderAspect>
+#include <Qt3DRender/QCamera>
+#include <Qt3DRender/QCameraLens>
+#include <Qt3DRender/QCamera>
+#include <Qt3DRender/QGeometry>
+#include <Qt3DRender/QAttribute>
+#include <Qt3DRender/QBuffer>
+
+#include <Qt3DExtras/QForwardRenderer>
+#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QCylinderMesh>
+#include <Qt3DExtras/QSphereMesh>
+#include <Qt3DExtras/QTorusMesh>
+#include <Qt3DExtras/QPlaneMesh>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/Qt3DWindow>
+#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QOrbitCameraController>
+
+#include "Qt3DExtras/qt3dwindow.h"
+#include "Qt3DExtras/qorbitcameracontroller.h"
 
 
 #include "wdCubeReadValues.h"
@@ -80,6 +111,7 @@ private:
     clIceClientServer * meIceClientServer;
 	bool readXMLfile();
     bool fillForm();
+    bool initialiseDisplayWidget();
 
     QString meConfigurationFile;
 
@@ -140,5 +172,32 @@ private:
     QTreeWidgetItem * meBeacon_03;
     QTreeWidgetItem * meSensor_01;
     QTreeWidgetItem * meSensor_02;
+
+    //DisplayWidget
+    QWidget *widget;
+    QHBoxLayout *hLayout;
+    QVBoxLayout *vLayout;
+    Qt3DExtras::Qt3DWindow* meViewPort;
+    QWidget* meContainer;
+    Qt3DCore::QEntity * rootEntity;
+    Qt3DInput::QInputAspect *input;
+    Qt3DExtras::QOrbitCameraController * camController;
+    Qt3DRender::QCamera * camera;
+
+    //Points
+    Qt3DCore::QEntity* createPointEntity(Qt3DCore::QEntity* rootEntity, QString paName, QString paKind, QString paXcoord, QString paYcoord, QString paZcoord, int paId);
+    Qt3DCore::QEntity* createPlane(Qt3DCore::QEntity* rootEntity, QString paPlaneImage);
+    Qt3DCore::QEntity* createLineEntity(Qt3DCore::QEntity* rootEntity);
+    // Sphere
+    vector<Qt3DCore::QEntity *> sphereEntity;
+    vector<Qt3DExtras::QSphereMesh*> sphereMesh;
+    vector<Qt3DCore::QTransform*> transform;
+    // Material
+    vector<Qt3DExtras::QPhongMaterial*> material;
+    //Extra info
+    vector<QString> meName;
+    vector<QString> meUUID;
+    QString meDisplayedView = "";
+
 };
 #endif

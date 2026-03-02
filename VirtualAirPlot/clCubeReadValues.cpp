@@ -11,9 +11,11 @@ clCubeReadValues::clCubeReadValues(clIceClientServer * paIceClientServer, clIceC
 
 		meCubeReadValues.setupUi(this);
 
+		widget = NULL;
 
 		readXMLfile();
 		fillForm();
+		initialiseDisplayWidget();
 
 
 		connect(meCubeReadValues.chkBeacon_01, SIGNAL(toggled(bool)),this, SLOT(verifyCheck_beacon01(bool)));
@@ -45,6 +47,331 @@ clCubeReadValues::clCubeReadValues(clIceClientServer * paIceClientServer, clIceC
 
 clCubeReadValues::~clCubeReadValues()
 {
+}
+bool clCubeReadValues::initialiseDisplayWidget()
+{
+	try
+	{
+		if (widget != NULL)
+		{
+			delete widget;
+			widget = NULL;
+
+			material.clear();
+			transform.clear();
+			sphereMesh.clear();
+			sphereEntity.clear();
+			meName.clear();
+			meUUID.clear();
+		}
+
+		// Create a Qt3D window
+		meViewPort = new Qt3DExtras::Qt3DWindow();
+		meViewPort->defaultFrameGraph()->setClearColor(QColor(QRgb(0xFFFFFFf)));
+		//meViewPort->defaultFrameGraph()->setClearColor(QColor(QRgb(0x000000)));
+		//meObjectLocator.wdgObjectLocation = QWidget::createWindowContainer(meViewPort);
+		meContainer = QWidget::createWindowContainer(meViewPort);
+		QSize screenSize = meViewPort->screen()->size();
+		meContainer->setMinimumSize(QSize(800, 600));
+		meContainer->setMaximumSize(screenSize);
+
+
+		input = new Qt3DInput::QInputAspect;
+		meViewPort->registerAspect(input);
+
+
+		widget = new QWidget;
+		hLayout = new QHBoxLayout(widget);
+		vLayout = new QVBoxLayout();
+		vLayout->setAlignment(Qt::AlignTop);
+		hLayout->addWidget(meContainer, 1);
+		hLayout->addLayout(vLayout);
+
+		widget->setWindowTitle(QStringLiteral("Location"));
+
+
+
+
+		// Root entity
+		rootEntity = new Qt3DCore::QEntity();
+
+		// Add the line entity
+		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::showLocatorMapForLocation -> createLineEntity");
+		createLineEntity(rootEntity);
+
+		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::showLocatorMapForLocation -> createPointEntity");
+		createPointEntity(rootEntity, QString("sensor_01"), QString("10"), QString("500"), QString("500"), QString("500"), 0);
+		createPointEntity(rootEntity, QString("sensor_02"), QString("20"), QString("300"), QString("300"), QString("300"), 1);
+
+		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::showLocatorMapForLocation -> createPlane");
+		createPlane(rootEntity, QString("./ICONS/10x10.jpg"));
+
+		// Camera setup
+
+		camera = meViewPort->camera();
+		camera->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+		camera->setPosition(QVector3D(0, 0, 2));
+		//TO REMOVE
+		//camera->setUpVector(QVector3D(0, 1, 0));
+		camera->setViewCenter(QVector3D(0, 0, 0));
+
+		// Camera controller
+		camController = new Qt3DExtras::QOrbitCameraController(rootEntity);
+		camController->setLinearSpeed(50.0f);
+		camController->setLookSpeed(180.0f);
+		camController->setCamera(camera);
+
+
+		// Set root entity
+		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::showLocatorMapForLocation -> set root entity");
+		meViewPort->setRootEntity(rootEntity);
+
+		// Show the window
+		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::showLocatorMapForLocation -> show container");
+
+		//meObjectLocator.horizontalLayout_Widgets->addWidget(meContainer,1);
+
+
+		widget->show();
+		widget->resize(800, 600);
+
+
+
+
+		return true;
+	}
+	catch(exception &e)
+	{
+		return false;
+	}
+}
+
+//Diplay an object on the map
+Qt3DCore::QEntity* clCubeReadValues::createPointEntity(Qt3DCore::QEntity* rootEntity, QString paName, QString paKind, QString paXcoord, QString paYcoord, QString paZcoord, int paId)
+{
+	try
+	{
+		//
+		meName.push_back(paName);
+		meUUID.push_back(paName);
+
+		// Sphere
+		sphereEntity.push_back(new Qt3DCore::QEntity(rootEntity));
+		sphereMesh.push_back(new Qt3DExtras::QSphereMesh);
+		sphereMesh.at(sphereMesh.size()-1)->setRadius(0.02f);
+
+		transform.push_back(new Qt3DCore::QTransform{sphereMesh.at(sphereMesh.size()-1)});
+		//transform->setRotationX(xAngle);
+		//transform->setRotationY(yAngle);
+		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::createPointEntity -> setting the coord");
+		transform.at(transform.size()-1)->setTranslation(QVector3D(paXcoord.toFloat()/1000, paYcoord.toFloat()/1000,paZcoord.toFloat()/1000));
+		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::createPointEntity -> coord set");
+		// Material
+		material.push_back(new Qt3DExtras::QPhongMaterial(rootEntity));
+
+		switch (paKind.toInt())
+		{
+			case 0:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::red));
+				break;
+			case 10:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::green));
+				break;
+			case 20:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::blue));
+				break;
+			case 30:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::black));
+				break;
+			case 40:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::gray));
+				break;
+			case 50:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::yellow));
+				break;
+			case 60:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::gray));
+				break;
+			case 70:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::red));
+				break;
+			case 80:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::red));
+				break;
+			case 90:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::red));
+				break;
+			case 100:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::red));
+				break;
+			default:
+				material.at(material.size()-1)->setDiffuse(QColor(Qt::white));
+		}
+
+		sphereEntity.at(sphereEntity.size()-1)->addComponent(material.at(material.size()-1));
+		sphereEntity.at(sphereEntity.size()-1)->addComponent(sphereMesh.at(sphereMesh.size()-1));
+		sphereEntity.at(sphereEntity.size()-1)->addComponent(transform.at(transform.size()-1));
+		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::createPointEntity -> returning the sphereEntity");
+		return sphereEntity.at(sphereEntity.size()-1);
+	}
+	catch(exception &e)
+	{
+		meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::createPointEntity -> " + QString(e.what()));
+		return NULL;
+	}
+}
+
+//Display the plane on the map
+Qt3DCore::QEntity* clCubeReadValues::createPlane(Qt3DCore::QEntity* rootEntity,QString paPlaneImage) {
+	// Plane shape data
+	Qt3DExtras::QPlaneMesh *planeMesh = new Qt3DExtras::QPlaneMesh();
+	planeMesh->setWidth(1);
+	planeMesh->setHeight(1);
+
+	Qt3DCore::QTransform *planeTransform = new Qt3DCore::QTransform();
+	planeTransform->setScale(1.0f);
+	planeTransform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1.0f, 0.0f, 0.0f), 90));
+	planeTransform->setTranslation(QVector3D(0.5f, 0.5f, 0.0f));
+
+	auto textureImage = new Qt3DRender::QTextureImage;
+	textureImage->setSource(QUrl::fromLocalFile(paPlaneImage));
+	auto planeImage = new Qt3DRender::QTexture2D();
+	planeImage->addTextureImage(textureImage);
+
+	auto planeMaterial = new Qt3DExtras::QDiffuseSpecularMaterial();
+	planeMaterial->setDiffuse(QVariant::fromValue(planeImage));
+	planeMaterial->setNormal(QVariant::fromValue(planeImage));
+	planeMaterial->setSpecular(QVariant::fromValue(planeImage));
+	planeMaterial->setShininess(0.1f);
+
+	auto m_planeEntity = new Qt3DCore::QEntity(rootEntity);
+	m_planeEntity->addComponent(planeMesh);
+	m_planeEntity->addComponent(planeMaterial);
+	m_planeEntity->addComponent(planeTransform);
+
+
+	return m_planeEntity;
+}
+
+//Display the axes system
+Qt3DCore::QEntity* clCubeReadValues::createLineEntity(Qt3DCore::QEntity* rootEntity) {
+
+	try
+	{
+		// Geometry for the line
+		auto geometry1 = new Qt3DRender::QGeometry(rootEntity);
+		auto geometry2 = new Qt3DRender::QGeometry(rootEntity);
+		auto geometry3 = new Qt3DRender::QGeometry(rootEntity);
+
+		// Vertex data (start and end points of the line)
+		QByteArray vertexData1;
+		vertexData1.resize(6 * sizeof(float)); // 2 points * 3 coordinates (x, y, z)
+		float* positions1 = reinterpret_cast<float*>(vertexData1.data());
+		positions1[0] = 0.0f; positions1[1] = 0.0f; positions1[2] = 0.0f; // Start point
+		positions1[3] = 1.0f; positions1[4] = 0.0f; positions1[5] = 0.0f; // End point
+
+		auto vertexBuffer1 = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::VertexBuffer, geometry1);
+		vertexBuffer1->setData(vertexData1);
+
+		// Vertex data (start and end points of the line)
+		QByteArray vertexData2;
+		vertexData2.resize(6 * sizeof(float)); // 2 points * 3 coordinates (x, y, z)
+		float* positions2 = reinterpret_cast<float*>(vertexData2.data());
+		positions2[0] = 0.0f; positions2[1] = 0.0f; positions2[2] = 0.0f; // Start point
+		positions2[3] = 0.0f; positions2[4] = 1.0f; positions2[5] = 0.0f; // End point
+
+		auto vertexBuffer2 = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::VertexBuffer, geometry2);
+		vertexBuffer2->setData(vertexData2);
+
+
+		// Vertex data (start and end points of the line)
+		QByteArray vertexData3;
+		vertexData3.resize(6 * sizeof(float)); // 2 points * 3 coordinates (x, y, z)
+		float* positions3 = reinterpret_cast<float*>(vertexData3.data());
+		positions3[0] = 0.0f; positions3[1] = 0.0f; positions3[2] = 0.0f; // Start point
+		positions3[3] = 0.0f; positions3[4] = 0.0f; positions3[5] = 1.0f; // End point
+
+		auto vertexBuffer3 = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::VertexBuffer, geometry3);
+		vertexBuffer3->setData(vertexData3);
+
+
+
+
+
+
+
+		auto positionAttribute1 = new Qt3DRender::QAttribute();
+		positionAttribute1->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
+		positionAttribute1->setVertexBaseType(Qt3DRender::QAttribute::Float);
+		positionAttribute1->setVertexSize(3);
+		positionAttribute1->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+		positionAttribute1->setBuffer(vertexBuffer1);
+		positionAttribute1->setByteStride(3 * sizeof(float));
+		positionAttribute1->setCount(2);
+
+		auto positionAttribute2 = new Qt3DRender::QAttribute();
+		positionAttribute2->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
+		positionAttribute2->setVertexBaseType(Qt3DRender::QAttribute::Float);
+		positionAttribute2->setVertexSize(3);
+		positionAttribute2->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+		positionAttribute2->setBuffer(vertexBuffer2);
+		positionAttribute2->setByteStride(3 * sizeof(float));
+		positionAttribute2->setCount(2);
+
+		auto positionAttribute3 = new Qt3DRender::QAttribute();
+		positionAttribute3->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
+		positionAttribute3->setVertexBaseType(Qt3DRender::QAttribute::Float);
+		positionAttribute3->setVertexSize(3);
+		positionAttribute3->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+		positionAttribute3->setBuffer(vertexBuffer3);
+		positionAttribute3->setByteStride(3 * sizeof(float));
+		positionAttribute3->setCount(2);
+
+
+		geometry1->addAttribute(positionAttribute1);
+		geometry2->addAttribute(positionAttribute2);
+		geometry3->addAttribute(positionAttribute3);
+
+		// Line renderer
+		auto lineRenderer1 = new Qt3DRender::QGeometryRenderer();
+		lineRenderer1->setGeometry(geometry1);
+		lineRenderer1->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
+
+		// Line renderer
+		auto lineRenderer2 = new Qt3DRender::QGeometryRenderer();
+		lineRenderer2->setGeometry(geometry2);
+		lineRenderer2->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
+
+		// Line renderer
+		auto lineRenderer3 = new Qt3DRender::QGeometryRenderer();
+		lineRenderer3->setGeometry(geometry3);
+		lineRenderer3->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
+
+		// Entity
+		auto lineEntity1 = new Qt3DCore::QEntity(rootEntity);
+		lineEntity1->addComponent(lineRenderer1);
+		auto lineEntity2 = new Qt3DCore::QEntity(rootEntity);
+		lineEntity2->addComponent(lineRenderer2);
+		auto lineEntity3 = new Qt3DCore::QEntity(rootEntity);
+		lineEntity3->addComponent(lineRenderer3);
+
+		// Material
+		auto material = new Qt3DExtras::QPhongMaterial(rootEntity);
+		material->setDiffuse(QColor(Qt::red));
+		lineEntity1->addComponent(material);
+		lineEntity2->addComponent(material);
+		lineEntity3->addComponent(material);
+
+		meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::createLineEntity -> OK");
+
+		return lineEntity1;
+	}
+
+	catch(exception &e)
+	{
+		meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::createLineEntity -> " + QString(e.what()));
+		return NULL;
+	}
 }
 void clCubeReadValues::slotDoIt()
 {
@@ -176,6 +503,8 @@ void clCubeReadValues::slotDoIt()
 						{
 							meCubeReadValues.ledSensor_01_name->setText(loName_sensor01);
 							meCubeReadValues.ledSensor_01_coord->setText(QString("{*1,%2,%3}").arg(QString(loRetVal.at(0).c_str())).arg(QString(loRetVal.at(1).c_str())).arg(QString(loRetVal.at(2).c_str())));
+							transform.at(0)->setTranslation(QVector3D(QString(loRetVal.at(0).c_str()).toFloat()/1000,QString(loRetVal.at(2).c_str()).toFloat()/1000,QString(loRetVal.at(3).c_str()).toFloat()/1000));
+
 						}
 					}
 				}
@@ -269,6 +598,7 @@ void clCubeReadValues::slotDoIt()
 						{
 							meCubeReadValues.ledSensor_02_name->setText(loName_sensor02);
 							meCubeReadValues.ledSensor_02_coord->setText(QString("{*1,%2,%3}").arg(QString(loRetVal.at(0).c_str())).arg(QString(loRetVal.at(1).c_str())).arg(QString(loRetVal.at(2).c_str())));
+							transform.at(1)->setTranslation(QVector3D(QString(loRetVal.at(0).c_str()).toFloat()/1000,QString(loRetVal.at(2).c_str()).toFloat()/1000,QString(loRetVal.at(3).c_str()).toFloat()/1000));
 						}
 					}
 				}
