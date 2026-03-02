@@ -99,9 +99,16 @@ bool clCubeReadValues::initialiseDisplayWidget()
 		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::showLocatorMapForLocation -> createLineEntity");
 		createLineEntity(rootEntity);
 
+
+
+
+
+
+
 		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::showLocatorMapForLocation -> createPointEntity");
 		createPointEntity(rootEntity, QString("sensor_01"), QString("10"), QString("500"), QString("500"), QString("500"), 0);
 		createPointEntity(rootEntity, QString("sensor_02"), QString("20"), QString("300"), QString("300"), QString("300"), 1);
+		createLineEntityPoints(rootEntity,QString("500"), QString("500"), QString("500"),QString("300"), QString("300"), QString("300"));
 
 		meIceClientLogging->insertItem("50",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::showLocatorMapForLocation -> createPlane");
 		createPlane(rootEntity, QString("./ICONS/10x10.jpg"));
@@ -252,7 +259,59 @@ Qt3DCore::QEntity* clCubeReadValues::createPlane(Qt3DCore::QEntity* rootEntity,Q
 
 	return m_planeEntity;
 }
+//Display the axes system
+Qt3DCore::QEntity* clCubeReadValues::createLineEntityPoints(Qt3DCore::QEntity* rootEntity, QString paPoint1_X, QString paPoint1_Y, QString paPoint1_Z,QString paPoint2_X, QString paPoint2_Y, QString paPoint2_Z) {
 
+	try
+	{
+		// Geometry for the line
+		auto geometry1 = new Qt3DRender::QGeometry(rootEntity);
+
+		// Vertex data (start and end points of the line)
+		QByteArray vertexData1;
+		vertexData1.resize(6 * sizeof(float)); // 2 points * 3 coordinates (x, y, z)
+		float* positions1 = reinterpret_cast<float*>(vertexData1.data());
+		positions1[0] = paPoint1_X.toFloat()/1000; positions1[1] = paPoint1_Y.toFloat()/1000; positions1[2] = paPoint1_Z.toFloat()/1000; // Start point
+		positions1[3] = paPoint2_X.toFloat()/1000; positions1[4] = paPoint2_Y.toFloat()/1000; positions1[5] = paPoint2_Z.toFloat()/1000; // End point
+
+		auto vertexBuffer1 = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::VertexBuffer, geometry1);
+		vertexBuffer1->setData(vertexData1);
+
+		auto positionAttribute1 = new Qt3DRender::QAttribute();
+		positionAttribute1->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
+		positionAttribute1->setVertexBaseType(Qt3DRender::QAttribute::Float);
+		positionAttribute1->setVertexSize(3);
+		positionAttribute1->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+		positionAttribute1->setBuffer(vertexBuffer1);
+		positionAttribute1->setByteStride(3 * sizeof(float));
+		positionAttribute1->setCount(2);
+
+		geometry1->addAttribute(positionAttribute1);
+		// Line renderer
+		auto lineRenderer1 = new Qt3DRender::QGeometryRenderer();
+		lineRenderer1->setGeometry(geometry1);
+		lineRenderer1->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
+
+		// Entity
+		connectionEntity = new Qt3DCore::QEntity(rootEntity);
+		connectionEntity->addComponent(lineRenderer1);
+
+		// Material
+		auto material = new Qt3DExtras::QPhongMaterial(rootEntity);
+		material->setDiffuse(QColor(Qt::red));
+		connectionEntity->addComponent(material);
+
+		meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::createLineEntityPoints -> OK");
+
+		return connectionEntity;
+	}
+
+	catch(exception &e)
+	{
+		meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::createLineEntityPoints -> " + QString(e.what()));
+		return NULL;
+	}
+}
 //Display the axes system
 Qt3DCore::QEntity* clCubeReadValues::createLineEntity(Qt3DCore::QEntity* rootEntity) {
 
@@ -415,6 +474,20 @@ void clCubeReadValues::slotDoIt()
 
 		meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> Start query");
 
+
+
+		bool loBeacon01_readed = false;
+		bool loBeacon02_readed = false;
+		QString loBeacon01_X;
+		QString loBeacon01_Y;
+		QString loBeacon01_Z;
+		QString loBeacon02_X;
+		QString loBeacon02_Y;
+		QString loBeacon02_Z;
+
+
+
+
 		if (true)
 		{
 
@@ -504,7 +577,10 @@ void clCubeReadValues::slotDoIt()
 							meCubeReadValues.ledSensor_01_name->setText(loName_sensor01);
 							meCubeReadValues.ledSensor_01_coord->setText(QString("{*1,%2,%3}").arg(QString(loRetVal.at(0).c_str())).arg(QString(loRetVal.at(1).c_str())).arg(QString(loRetVal.at(2).c_str())));
 							transform.at(0)->setTranslation(QVector3D(QString(loRetVal.at(0).c_str()).toFloat()/1000,QString(loRetVal.at(2).c_str()).toFloat()/1000,QString(loRetVal.at(3).c_str()).toFloat()/1000));
-
+							loBeacon01_readed = true;
+							loBeacon01_X = QString(loRetVal.at(0).c_str());
+							loBeacon01_Y = QString(loRetVal.at(1).c_str());
+							loBeacon01_Z = QString(loRetVal.at(2).c_str());
 						}
 					}
 				}
@@ -588,6 +664,7 @@ void clCubeReadValues::slotDoIt()
 					loProps.push_back("BEACON_02_LENGHT");
 					loProps.push_back("BEACON_03_LENGHT");
 
+
 					if (!meIceClientServer->getFromTableDatabaseById(loTableNameTemp, loUUID,loProps,loRetVal,loRetMes))
 					{
 						meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> " + loRetMes);
@@ -599,13 +676,28 @@ void clCubeReadValues::slotDoIt()
 							meCubeReadValues.ledSensor_02_name->setText(loName_sensor02);
 							meCubeReadValues.ledSensor_02_coord->setText(QString("{*1,%2,%3}").arg(QString(loRetVal.at(0).c_str())).arg(QString(loRetVal.at(1).c_str())).arg(QString(loRetVal.at(2).c_str())));
 							transform.at(1)->setTranslation(QVector3D(QString(loRetVal.at(0).c_str()).toFloat()/1000,QString(loRetVal.at(2).c_str()).toFloat()/1000,QString(loRetVal.at(3).c_str()).toFloat()/1000));
+
+							loBeacon02_readed = true;
+							loBeacon02_X = QString(loRetVal.at(0).c_str());
+							loBeacon02_Y = QString(loRetVal.at(1).c_str());
+							loBeacon02_Z = QString(loRetVal.at(2).c_str());
+
 						}
 					}
 				}
 			}
 
 		}
+		if (loBeacon01_readed && loBeacon02_readed)
+		{
 
+			if (connectionEntity != NULL)
+			{
+				delete connectionEntity;
+				connectionEntity = NULL;
+				createLineEntityPoints(rootEntity,QString("500"), QString("500"), QString("500"),QString("300"), QString("300"), QString("300"));
+			}
+		}
 
 
 

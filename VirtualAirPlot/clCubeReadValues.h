@@ -183,11 +183,12 @@ private:
     Qt3DInput::QInputAspect *input;
     Qt3DExtras::QOrbitCameraController * camController;
     Qt3DRender::QCamera * camera;
-
+    Qt3DCore::QEntity * connectionEntity;
     //Points
     Qt3DCore::QEntity* createPointEntity(Qt3DCore::QEntity* rootEntity, QString paName, QString paKind, QString paXcoord, QString paYcoord, QString paZcoord, int paId);
     Qt3DCore::QEntity* createPlane(Qt3DCore::QEntity* rootEntity, QString paPlaneImage);
     Qt3DCore::QEntity* createLineEntity(Qt3DCore::QEntity* rootEntity);
+    Qt3DCore::QEntity* createLineEntityPoints(Qt3DCore::QEntity* rootEntity, QString paPoint1_X, QString paPoint1_Y, QString paPoint1_Z, QString paPoint2_X, QString paPoint2_Y, QString paPoint2_Z);
     // Sphere
     vector<Qt3DCore::QEntity *> sphereEntity;
     vector<Qt3DExtras::QSphereMesh*> sphereMesh;
@@ -198,6 +199,8 @@ private:
     vector<QString> meName;
     vector<QString> meUUID;
     QString meDisplayedView = "";
+
+
 
 };
 #endif
