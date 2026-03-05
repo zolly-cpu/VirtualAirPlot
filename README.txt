@@ -1,10 +1,9 @@
 VirtualAirPlot
 -----------------
 
-Database is getting generated there i have the generate 1000.000.000 records for the distances. (Dimensions {1000,1000,1000})
-Reached the 7.000.000 records for the moment ... .
-This will be uploaded.
-The arduino code will also be uploaded.
+Database is generated there i have the generate 1000.000.000 records for the distances. (Dimensions {1000,1000,1000})
+Added indexes to the table and one query takes up to 700ms, so this must still be finetuned.
+
 The basics to supply the coord of the match dimensions are now in the code.
 In the DatabaseStructure.xml you can find in the last entry the configuration of the database for the virtual air plot.
 ______________________________________________________________________________________________________________________________
