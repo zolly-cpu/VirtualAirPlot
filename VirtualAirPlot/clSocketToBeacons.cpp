@@ -50,11 +50,12 @@ void clSocketToBeacons::incomingConnection(qintptr socketDescriptor)
 	qDebug() << socketDescriptor << " Connecting...";
 	meThread = new clSocketToBeaconThread(socketDescriptor, this);
 	connect(meThread, SIGNAL(finished()), meThread, SLOT(deleteLater()));
-	connect(meThread, SIGNAL(dataReaded()), meThread, SLOT(transferData()));
+	connect(meThread, SIGNAL(dataReaded()), this, SLOT(transferData()));
 	meThread->start();
 }
 void clSocketToBeacons::transferData()
 {
+	qDebug() << " Data readed ...";
 	meBeacon_lenght_primary = meThread->beacon_lenght_primary;
 	meBeacon_lenght_secondary = meThread->beacon_lenght_secondary;
 	meBeacon_name_primary = meThread->beacon_name_primary;

@@ -38,6 +38,19 @@ module UVServerAppServer {
                                             tyStringSequence paLogExp,
                                             out tyStringSequence paReturnId,
                                             out string paReturnMessage);
+
+      bool getFromTableDatbaseByPropertyRepresentProp(  string paTableName,
+                                                        string paStartValue,
+                                                        string paMaxValue,
+                                                        tyStringSequence paProperties,
+                                                        tyStringSequence paValue,
+                                                        tyStringSequence paTypeValue,
+                                                        tyStringSequence paLogExp,
+                                                        out tyStringSequence paPropertiesReturn,
+                                                        out tyStringSequence paValuesReturn,
+                                                        out string paReturnMessage);
+
+
       bool getFromTableDatabaseById(    string paTableName,
                                         string paId,
                                         tyStringSequence paProperties,

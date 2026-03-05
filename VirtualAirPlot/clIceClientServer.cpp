@@ -166,6 +166,47 @@ bool clIceClientServer::getFromTableDatbaseByProperty(     QString& paTableName,
     }
 }
 
+bool clIceClientServer::getFromTableDatbaseByPropertyRepresentProp(     QString& paTableName,
+                                                           QString& paStartValue,
+                                                           QString& paMaxValue,
+                                                           vector<std::string>& paProperties,
+                                                           vector<std::string>& paValue,
+                                                           vector<std::string>& paTypeValue,
+                                                           vector<std::string>& paLogExp,
+                                                           vector<std::string>& paPropertiesReturn,
+                                                           vector<std::string>& paValuesReturn,
+                                                           QString& paReturnMessage)
+{
+    try
+    {
+
+        UVServerAppServer::tyStringSequence loProperties;
+        UVServerAppServer::tyStringSequence loValue;
+        UVServerAppServer::tyStringSequence loTypeValue;
+        UVServerAppServer::tyStringSequence loLogExp;
+
+        copy(paProperties.begin(), paProperties.end(), back_inserter(loProperties));
+        copy(paValue.begin(), paValue.end(), back_inserter(loValue));
+        copy(paTypeValue.begin(), paTypeValue.end(), back_inserter(loTypeValue));
+        copy(paLogExp.begin(), paLogExp.end(), back_inserter(loLogExp));
+
+
+
+        string loReturnMessage;
+        loReturnMessage = std::string(paReturnMessage.toUtf8());
+        meServerAppServer->getFromTableDatbaseByPropertyRepresentProp(string(paTableName.toUtf8()), string(paStartValue.toUtf8()), string(paMaxValue.toUtf8()), loProperties, loValue, loTypeValue, loLogExp, paPropertiesReturn, paValuesReturn, loReturnMessage);
+
+        paReturnMessage = QString(loReturnMessage.c_str());
+        return true;
+    }
+    catch(exception &e)
+    {
+        meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"2UVServerTest.exe","clIceClientServer::getFromTableDatbaseByPropertyRepresentProp -> " + QString(e.what()));
+        return false;
+    }
+}
+
+
 bool clIceClientServer::getFromTableDatabaseById(  QString& paTableName,
                                         QString& paId,
                                         vector<std::string>& paProperties,

@@ -81,6 +81,17 @@ public:
                                                     vector<std::string>& paReturnId,
                                                     QString& paReturnMessage);
 
+    virtual bool getFromTableDatbaseByPropertyRepresentProp(    QString& paTableName,
+                                                                QString& paStartValue,
+                                                                QString& paMaxValue,
+                                                                vector<std::string>& paProperties,
+                                                                vector<std::string>& paValue,
+                                                                vector<std::string>& paTypeValue,
+                                                                vector<std::string>& paLogExp,
+                                                                vector<std::string>& paPropertiesReturn,
+                                                                vector<std::string>& paValuesReturn,
+                                                                QString& paReturnMessage);
+
     virtual bool getFromTableDatabaseById(  QString& paTableName,
                                             QString& paId,
                                             vector<std::string>& paProperties,

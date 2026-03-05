@@ -48,6 +48,6 @@
 		<x>1000</x>
 		<y>1000</y>
 		<z>1000</z>
-		<tol>0.5</tol>
+		<tol>1</tol>
 	</dim>
 </VirtualAirPlot>

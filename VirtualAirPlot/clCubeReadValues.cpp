@@ -476,14 +476,14 @@ void clCubeReadValues::slotDoIt()
 
 
 
-		bool loBeacon01_readed = false;
-		bool loBeacon02_readed = false;
-		QString loBeacon01_X;
-		QString loBeacon01_Y;
-		QString loBeacon01_Z;
-		QString loBeacon02_X;
-		QString loBeacon02_Y;
-		QString loBeacon02_Z;
+		bool loSensor01_readed = false;
+		bool loSensor02_readed = false;
+		QString loSensor01_X;
+		QString loSensor01_Y;
+		QString loSensor01_Z;
+		QString loSensor02_X;
+		QString loSensor02_Y;
+		QString loSensor02_Z;
 
 
 
@@ -491,12 +491,13 @@ void clCubeReadValues::slotDoIt()
 		if (true)
 		{
 
-
+			meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> Propertie size:" + QString("Lenght [%1,%2,%3]").arg(QString::number(loLenght_beacon01_sensor01)).arg(QString::number(loLenght_beacon02_sensor01)).arg(QString::number(loLenght_beacon03_sensor01)));
 			vector<std::string> loProperties;
 			vector<std::string> loValue;
 			vector<std::string> loTypeValue;
 			vector<std::string> loLogExp;
-			vector<std::string> loReturnId;
+			vector<std::string> loPropertiesReturn;
+			vector<std::string> loValuesReturn;
 			QString loReturnMessage;
 
 			QString loTableName = QString("VIRTUAL_AIR_PLOT_COORD");
@@ -530,59 +531,23 @@ void clCubeReadValues::slotDoIt()
 			loTypeValue.push_back("float8");
 			loLogExp.push_back(">");
 
-			if (!meIceClientServer->getFromTableDatbaseByProperty(loTableName,loStart,loStop,loProperties,loValue,loTypeValue,loLogExp,loReturnId,loReturnMessage))
+			if (!meIceClientServer->getFromTableDatbaseByPropertyRepresentProp(loTableName,loStart,loStop,loProperties,loValue,loTypeValue,loLogExp,loPropertiesReturn,loValuesReturn,loReturnMessage))
 			{
 				meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> " + loReturnMessage);
 				return;
 			}
 			else
 			{
-				if (loReturnId.size() > 0)
+				meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> Propertie size:" + QString::number(loPropertiesReturn.size()));
+				if (loPropertiesReturn.size() > 0)
 				{
-					//Get the coordinates
-					/*
-					 virtual bool getFromTableDatabaseById(  QString& paTableName,     *
-					 QString& paId,
-					 vector<std::string>& paProperties,
-					 vector<std::string>& paReturnValue,
-					 QString& paReturnMessage);
-					*/
-					QString loTableNameTemp = QString("VIRTUAL_AIR_PLOT_COORD");
-					QString loUUID = QString(loReturnId.at(0).c_str());
-					vector<std::string> loProps;
-					vector<std::string> loRetVal;
-					QString loRetMes;
-
-					loProps.push_back("BEACON_01_X_COORD");
-					loProps.push_back("BEACON_01_Y_COORD");
-					loProps.push_back("BEACON_01_Z_COORD");
-					loProps.push_back("BEACON_02_X_COORD");
-					loProps.push_back("BEACON_02_Y_COORD");
-					loProps.push_back("BEACON_02_Z_COORD");
-					loProps.push_back("BEACON_03_X_COORD");
-					loProps.push_back("BEACON_03_Y_COORD");
-					loProps.push_back("BEACON_03_Z_COORD");
-					loProps.push_back("BEACON_01_LENGHT");
-					loProps.push_back("BEACON_02_LENGHT");
-					loProps.push_back("BEACON_03_LENGHT");
-
-					if (!meIceClientServer->getFromTableDatabaseById(loTableNameTemp, loUUID,loProps,loRetVal,loRetMes))
-					{
-						meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> " + loRetMes);
-					}
-					else
-					{
-						if (loRetVal.size() > 0)
-						{
 							meCubeReadValues.ledSensor_01_name->setText(loName_sensor01);
-							meCubeReadValues.ledSensor_01_coord->setText(QString("{*1,%2,%3}").arg(QString(loRetVal.at(0).c_str())).arg(QString(loRetVal.at(1).c_str())).arg(QString(loRetVal.at(2).c_str())));
-							transform.at(0)->setTranslation(QVector3D(QString(loRetVal.at(0).c_str()).toFloat()/1000,QString(loRetVal.at(2).c_str()).toFloat()/1000,QString(loRetVal.at(3).c_str()).toFloat()/1000));
-							loBeacon01_readed = true;
-							loBeacon01_X = QString(loRetVal.at(0).c_str());
-							loBeacon01_Y = QString(loRetVal.at(1).c_str());
-							loBeacon01_Z = QString(loRetVal.at(2).c_str());
-						}
-					}
+							meCubeReadValues.ledSensor_01_coord->setText(QString("{%1,%2,%3}").arg(QString(loValuesReturn.at(0).c_str())).arg(QString(loValuesReturn.at(1).c_str())).arg(QString(loValuesReturn.at(2).c_str())));
+							transform.at(0)->setTranslation(QVector3D(QString(loValuesReturn.at(0).c_str()).toFloat()/1000,QString(loValuesReturn.at(1).c_str()).toFloat()/1000,QString(loValuesReturn.at(2).c_str()).toFloat()/1000));
+							loSensor01_readed = true;
+							loSensor01_X = QString(loValuesReturn.at(0).c_str());
+							loSensor01_Y = QString(loValuesReturn.at(1).c_str());
+							loSensor01_Y = QString(loValuesReturn.at(2).c_str());
 				}
 			}
 
@@ -594,7 +559,8 @@ void clCubeReadValues::slotDoIt()
 			vector<std::string> loValue;
 			vector<std::string> loTypeValue;
 			vector<std::string> loLogExp;
-			vector<std::string> loReturnId;
+			vector<std::string> loPropertiesReturn;
+			vector<std::string> loValuesReturn;
 			QString loReturnMessage;
 
 			QString loTableName = QString("VIRTUAL_AIR_PLOT_COORD");
@@ -628,74 +594,35 @@ void clCubeReadValues::slotDoIt()
 			loTypeValue.push_back("float8");
 			loLogExp.push_back(">");
 
-			if (!meIceClientServer->getFromTableDatbaseByProperty(loTableName,loStart,loStop,loProperties,loValue,loTypeValue,loLogExp,loReturnId,loReturnMessage))
+			if (!meIceClientServer->getFromTableDatbaseByPropertyRepresentProp(loTableName,loStart,loStop,loProperties,loValue,loTypeValue,loLogExp,loPropertiesReturn,loValuesReturn,loReturnMessage))
 			{
 				meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> " + loReturnMessage);
 				return;
 			}
 			else
 			{
-				if (loReturnId.size() > 0)
+				meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> Propertie size:" + QString::number(loPropertiesReturn.size()));
+				if (loPropertiesReturn.size() > 0)
 				{
-					//Get the coordinates
-					/*
-					 *		 virtual bool getFromTableDatabaseById(  QString& paTableName,     *
-					 *		 QString& paId,
-					 *		 vector<std::string>& paProperties,
-					 *		 vector<std::string>& paReturnValue,
-					 *		 QString& paReturnMessage);
-					 */
-					QString loTableNameTemp = QString("VIRTUAL_AIR_PLOT_COORD");
-					QString loUUID = QString(loReturnId.at(0).c_str());
-					vector<std::string> loProps;
-					vector<std::string> loRetVal;
-					QString loRetMes;
-
-					loProps.push_back("BEACON_01_X_COORD");
-					loProps.push_back("BEACON_01_Y_COORD");
-					loProps.push_back("BEACON_01_Z_COORD");
-					loProps.push_back("BEACON_02_X_COORD");
-					loProps.push_back("BEACON_02_Y_COORD");
-					loProps.push_back("BEACON_02_Z_COORD");
-					loProps.push_back("BEACON_03_X_COORD");
-					loProps.push_back("BEACON_03_Y_COORD");
-					loProps.push_back("BEACON_03_Z_COORD");
-					loProps.push_back("BEACON_01_LENGHT");
-					loProps.push_back("BEACON_02_LENGHT");
-					loProps.push_back("BEACON_03_LENGHT");
-
-
-					if (!meIceClientServer->getFromTableDatabaseById(loTableNameTemp, loUUID,loProps,loRetVal,loRetMes))
-					{
-						meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> " + loRetMes);
-					}
-					else
-					{
-						if (loRetVal.size() > 0)
-						{
-							meCubeReadValues.ledSensor_02_name->setText(loName_sensor02);
-							meCubeReadValues.ledSensor_02_coord->setText(QString("{*1,%2,%3}").arg(QString(loRetVal.at(0).c_str())).arg(QString(loRetVal.at(1).c_str())).arg(QString(loRetVal.at(2).c_str())));
-							transform.at(1)->setTranslation(QVector3D(QString(loRetVal.at(0).c_str()).toFloat()/1000,QString(loRetVal.at(2).c_str()).toFloat()/1000,QString(loRetVal.at(3).c_str()).toFloat()/1000));
-
-							loBeacon02_readed = true;
-							loBeacon02_X = QString(loRetVal.at(0).c_str());
-							loBeacon02_Y = QString(loRetVal.at(1).c_str());
-							loBeacon02_Z = QString(loRetVal.at(2).c_str());
-
-						}
-					}
+					meCubeReadValues.ledSensor_02_name->setText(loName_sensor02);
+					meCubeReadValues.ledSensor_02_coord->setText(QString("{%1,%2,%3}").arg(QString(loValuesReturn.at(0).c_str())).arg(QString(loValuesReturn.at(1).c_str())).arg(QString(loValuesReturn.at(2).c_str())));
+					transform.at(1)->setTranslation(QVector3D(QString(loValuesReturn.at(0).c_str()).toFloat()/1000,QString(loValuesReturn.at(1).c_str()).toFloat()/1000,QString(loValuesReturn.at(2).c_str()).toFloat()/1000));
+					loSensor02_readed = true;
+					loSensor02_X = QString(loValuesReturn.at(0).c_str());
+					loSensor02_Y = QString(loValuesReturn.at(1).c_str());
+					loSensor02_Y = QString(loValuesReturn.at(2).c_str());
 				}
 			}
 
 		}
-		if (loBeacon01_readed && loBeacon02_readed)
+		if (loSensor01_readed && loSensor02_readed)
 		{
 
 			if (connectionEntity != NULL)
 			{
 				delete connectionEntity;
 				connectionEntity = NULL;
-				createLineEntityPoints(rootEntity,QString("500"), QString("500"), QString("500"),QString("300"), QString("300"), QString("300"));
+				createLineEntityPoints(rootEntity,loSensor01_X, loSensor01_Y, loSensor01_Z,loSensor02_X, loSensor02_Y, loSensor02_Z);
 			}
 		}
 
