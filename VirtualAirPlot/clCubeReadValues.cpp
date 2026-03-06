@@ -34,7 +34,7 @@ clCubeReadValues::clCubeReadValues(clIceClientServer * paIceClientServer, clIceC
 
 
 		meTimer = new QTimer(this);
-		meTimer->setInterval(1000);
+		meTimer->setInterval(250);
 		meTimer->connect(meTimer, SIGNAL(timeout()), this, SLOT(slotDoIt()));
 		meTimer->start();
 		meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::clCubeReadValues() -> Constructor done");
@@ -448,30 +448,51 @@ void clCubeReadValues::slotDoIt()
 		float loLenght_beacon03_sensor02;
 		QString loName_sensor02;
 
-		//Get the distance from the socket beacon
-		if (meSocketToBeacon_beacon01 != NULL)
-		{
-			loLenght_beacon01_sensor01 = meSocketToBeacon_beacon01->meBeacon_lenght_primary;
-			loLenght_beacon01_sensor02 = meSocketToBeacon_beacon01->meBeacon_lenght_secondary;
-			loName_sensor01 = meSocketToBeacon_beacon01->meBeacon_name_primary;
-			loName_sensor02 = meSocketToBeacon_beacon01->meBeacon_name_secondary;
-		}
-		if (meSocketToBeacon_beacon02 != NULL)
-		{
-			loLenght_beacon02_sensor01 = meSocketToBeacon_beacon02->meBeacon_lenght_primary;
-			loLenght_beacon02_sensor02 = meSocketToBeacon_beacon02->meBeacon_lenght_secondary;
-			loName_sensor01 = meSocketToBeacon_beacon02->meBeacon_name_primary;
-			loName_sensor02 = meSocketToBeacon_beacon02->meBeacon_name_secondary;
-		}
-		if (meSocketToBeacon_beacon03 != NULL)
-		{
-			loLenght_beacon03_sensor01 = meSocketToBeacon_beacon03->meBeacon_lenght_primary;
-			loLenght_beacon03_sensor02 = meSocketToBeacon_beacon03->meBeacon_lenght_secondary;
-			loName_sensor01 = meSocketToBeacon_beacon03->meBeacon_name_primary;
-			loName_sensor02 = meSocketToBeacon_beacon03->meBeacon_name_secondary;
-		}
+		bool loDoQuery = true;
 
 
+		if ((meSocketToBeacon_beacon01 != NULL) && (meSocketToBeacon_beacon02 != NULL) && (meSocketToBeacon_beacon03 != NULL))
+		{
+			//Get the distance from the socket beacon
+			if (meSocketToBeacon_beacon01->meBeacon_lenght_primary == 0 || meSocketToBeacon_beacon01->meBeacon_lenght_secondary == 0 ||
+				meSocketToBeacon_beacon01->meBeacon_lenght_primary == 0 || meSocketToBeacon_beacon01->meBeacon_lenght_secondary == 0 ||
+				meSocketToBeacon_beacon01->meBeacon_lenght_primary == 0 || meSocketToBeacon_beacon01->meBeacon_lenght_secondary == 0)
+			{
+				meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> Lenghts nok");
+				loDoQuery = false;
+			}
+			else
+			{
+				if (meSocketToBeacon_beacon01 != NULL)
+				{
+					loLenght_beacon01_sensor01 = meSocketToBeacon_beacon01->meBeacon_lenght_primary;
+					loLenght_beacon01_sensor02 = meSocketToBeacon_beacon01->meBeacon_lenght_secondary;
+					loName_sensor01 = meSocketToBeacon_beacon01->meBeacon_name_primary;
+					loName_sensor02 = meSocketToBeacon_beacon01->meBeacon_name_secondary;
+					meCubeReadValues.txtMessage->append(QString("Beacon_01 prim[%1] sec[%2]").arg(QString::number(loLenght_beacon01_sensor01)).arg(QString::number(loLenght_beacon01_sensor02)));
+				}
+				if (meSocketToBeacon_beacon02 != NULL)
+				{
+					loLenght_beacon02_sensor01 = meSocketToBeacon_beacon02->meBeacon_lenght_primary;
+					loLenght_beacon02_sensor02 = meSocketToBeacon_beacon02->meBeacon_lenght_secondary;
+					loName_sensor01 = meSocketToBeacon_beacon02->meBeacon_name_primary;
+					loName_sensor02 = meSocketToBeacon_beacon02->meBeacon_name_secondary;
+					meCubeReadValues.txtMessage->append(QString("Beacon_02 prim[%1] sec[%2]").arg(QString::number(loLenght_beacon02_sensor01)).arg(QString::number(loLenght_beacon02_sensor02)));
+				}
+				if (meSocketToBeacon_beacon03 != NULL)
+				{
+					loLenght_beacon03_sensor01 = meSocketToBeacon_beacon03->meBeacon_lenght_primary;
+					loLenght_beacon03_sensor02 = meSocketToBeacon_beacon03->meBeacon_lenght_secondary;
+					loName_sensor01 = meSocketToBeacon_beacon03->meBeacon_name_primary;
+					loName_sensor02 = meSocketToBeacon_beacon03->meBeacon_name_secondary;
+					meCubeReadValues.txtMessage->append(QString("Beacon_03 prim[%1] sec[%2]").arg(QString::number(loLenght_beacon03_sensor01)).arg(QString::number(loLenght_beacon03_sensor02)));
+				}
+			}
+		}
+		else
+		{
+			loDoQuery = false;
+		}
 		meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> Start query");
 
 
@@ -488,7 +509,7 @@ void clCubeReadValues::slotDoIt()
 
 
 
-		if (true)
+		if (loDoQuery)
 		{
 
 			meIceClientLogging->insertItem("10",QString(QHostInfo::localHostName()),"VirtualAirPlot","clCubeReadValues::slotDoIt() -> Propertie size:" + QString("Lenght [%1,%2,%3]").arg(QString::number(loLenght_beacon01_sensor01)).arg(QString::number(loLenght_beacon02_sensor01)).arg(QString::number(loLenght_beacon03_sensor01)));
@@ -553,7 +574,7 @@ void clCubeReadValues::slotDoIt()
 
 
 		}
-		if(true)
+		if(loDoQuery)
 		{
 			vector<std::string> loProperties;
 			vector<std::string> loValue;
@@ -615,6 +636,7 @@ void clCubeReadValues::slotDoIt()
 			}
 
 		}
+		/*
 		if (loSensor01_readed && loSensor02_readed)
 		{
 
@@ -625,7 +647,7 @@ void clCubeReadValues::slotDoIt()
 				createLineEntityPoints(rootEntity,loSensor01_X, loSensor01_Y, loSensor01_Z,loSensor02_X, loSensor02_Y, loSensor02_Z);
 			}
 		}
-
+		*/
 
 
 

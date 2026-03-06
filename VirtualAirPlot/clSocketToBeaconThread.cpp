@@ -59,7 +59,7 @@ void clSocketToBeaconThread::readyReadSocket()
 			qDebug() << meSocketDescriptor << " Data in: " << endl << convertDataFromSocket(loData) << endl;
 
 			QDomDocument loDomDocument;
-			if ( !loDomDocument.setContent( loData ) )
+			if ( !loDomDocument.setContent( convertDataFromSocket(loData).replace("\"","") ) )
 			{
 				return;
 			}
@@ -73,11 +73,13 @@ void clSocketToBeaconThread::readyReadSocket()
 			{
 				if(loTablesNode.nodeName() == "sensor_01")
 				{
+					cout << "clSocketToBeaconThread::readyReadSocket->sensor01" << endl;
 					QDomElement loDocElemChild = loTablesNode.toElement(); // try to convert the node to an element.
 					if( !loDocElemChild.isNull() )// the node was really an element.
 					{
 						if (loDocElemChild.hasAttribute(QString("name")))
 						{
+							cout << "clSocketToBeaconThread::readyReadSocket->name" << endl;
 							//QString loValue = loDocElemChild.attribute(paAttribute);
 							//paValue = &loValue;
 							beacon_name_primary = loDocElemChild.attribute("name");
@@ -92,11 +94,13 @@ void clSocketToBeaconThread::readyReadSocket()
 				}
 				if(loTablesNode.nodeName() == "sensor_02")
 				{
+					cout << "clSocketToBeaconThread::readyReadSocket->sensor02" << endl;
 					QDomElement loDocElemChild = loTablesNode.toElement(); // try to convert the node to an element.
 					if( !loDocElemChild.isNull() )// the node was really an element.
 					{
 						if (loDocElemChild.hasAttribute(QString("name")))
 						{
+							cout << "clSocketToBeaconThread::readyReadSocket->name" << endl;
 							//QString loValue = loDocElemChild.attribute(paAttribute);
 							//paValue = &loValue;
 							beacon_name_secondary = loDocElemChild.attribute("name");
@@ -111,6 +115,8 @@ void clSocketToBeaconThread::readyReadSocket()
 				}
 				loTablesNode = loTablesNode.nextSibling();
 			}
+
+			qDebug() << "Refactured data: " << endl << QString("sensor_01 [%1,%2]").arg(QString::number(beacon_lenght_primary)).arg(QString::number(beacon_lenght_secondary)) << endl;
 
 			emit dataReaded ();
 			/*
